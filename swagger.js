@@ -13,6 +13,10 @@ const options = {
         url: "http://localhost:3000",
         description: "Local server",
       },
+      {
+        url: "https://resto-snack-api.onrender.com",
+        description: "Render server",
+      },
     ],
   },
   apis: ["./routes/*.js"],
