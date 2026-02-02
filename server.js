@@ -1,9 +1,16 @@
 const express = require("express");
 require("dotenv").config();
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 const connectDB = require("./config/db");
 
 const app = express();
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get("/swagger.json", (req, res) => res.json(swaggerSpec));
+
 
 app.get("/", (req, res) => {
   res.send("resto-snack-api running");
