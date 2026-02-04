@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const requireAuth = require("../middleware/requireAuth");
 
 const {
   getOrders,
@@ -83,6 +84,8 @@ router.get("/:id", getOrderById);
  *     summary: Create a new order
  *     tags:
  *       - Orders
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -92,8 +95,10 @@ router.get("/:id", getOrderById);
  *     responses:
  *       201:
  *         description: Created
+ *       401:
+ *         description: Unauthorized
  */
-router.post("/", createOrder);
+router.post("/", requireAuth, createOrder);
 
 /**
  * @openapi
@@ -102,6 +107,8 @@ router.post("/", createOrder);
  *     summary: Update an order by id
  *     tags:
  *       - Orders
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -117,10 +124,12 @@ router.post("/", createOrder);
  *     responses:
  *       200:
  *         description: Updated
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Order not found
  */
-router.put("/:id", updateOrder);
+router.put("/:id", requireAuth, updateOrder);
 
 /**
  * @openapi
@@ -129,6 +138,8 @@ router.put("/:id", updateOrder);
  *     summary: Delete an order by id
  *     tags:
  *       - Orders
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -138,9 +149,11 @@ router.put("/:id", updateOrder);
  *     responses:
  *       204:
  *         description: Deleted
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Order not found
  */
-router.delete("/:id", deleteOrder);
+router.delete("/:id", requireAuth, deleteOrder);
 
 module.exports = router;

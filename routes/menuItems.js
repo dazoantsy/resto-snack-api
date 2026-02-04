@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const requireAuth = require("../middleware/requireAuth");
 
 const {
   getMenuItems,
@@ -71,6 +72,8 @@ router.get("/:id", getMenuItemById);
  *     summary: Create a new menu item
  *     tags:
  *       - MenuItems
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -80,8 +83,10 @@ router.get("/:id", getMenuItemById);
  *     responses:
  *       201:
  *         description: Created
+ *       401:
+ *         description: Unauthorized
  */
-router.post("/", createMenuItem);
+router.post("/", requireAuth, createMenuItem);
 
 /**
  * @openapi
@@ -90,6 +95,8 @@ router.post("/", createMenuItem);
  *     summary: Update a menu item by id
  *     tags:
  *       - MenuItems
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -105,10 +112,12 @@ router.post("/", createMenuItem);
  *     responses:
  *       200:
  *         description: Updated
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Menu item not found
  */
-router.put("/:id", updateMenuItem);
+router.put("/:id", requireAuth, updateMenuItem);
 
 /**
  * @openapi
@@ -117,6 +126,8 @@ router.put("/:id", updateMenuItem);
  *     summary: Delete a menu item by id
  *     tags:
  *       - MenuItems
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -126,9 +137,11 @@ router.put("/:id", updateMenuItem);
  *     responses:
  *       204:
  *         description: Deleted
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Menu item not found
  */
-router.delete("/:id", deleteMenuItem);
+router.delete("/:id", requireAuth, deleteMenuItem);
 
 module.exports = router;
