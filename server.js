@@ -43,6 +43,8 @@ app.use("/auth", require("./routes/auth"));
 // API routes
 app.use("/orders", require("./routes/orders"));
 app.use("/menu-items", require("./routes/menuItems"));
+app.use("/categories", require("./routes/categories"));
+app.use("/users", require("./routes/users"));
 
 // 404
 app.use((req, res) => {

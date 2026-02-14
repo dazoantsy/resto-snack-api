@@ -1,15 +1,24 @@
 const passport = require("passport");
 const GitHubStrategy = require("passport-github2").Strategy;
+const User = require("../models/User");
 
 /**
- * We store a small subset of the GitHub profile in the session.
+ * Store only the MongoDB user id in the session.
  */
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user._id.toString());
 });
 
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
+/**
+ * Load user from MongoDB by id.
+ */
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id).lean();
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });
 
 passport.use(
@@ -21,17 +30,21 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Keep it small: only what we need.
-        const user = {
-          githubId: profile.id,
-          username: profile.username,
-          displayName: profile.displayName || profile.username,
-        };
+        const githubId = String(profile.id);
+        const username = profile.username || "";
+        const displayName = profile.displayName || username;
+
+        // Upsert user in MongoDB (create if not exists, otherwise update)
+        const user = await User.findOneAndUpdate(
+          { githubId },
+          { githubId, username, displayName },
+          { new: true, upsert: true, setDefaultsOnInsert: true },
+        );
 
         return done(null, user);
       } catch (err) {
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );

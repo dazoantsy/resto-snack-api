@@ -17,8 +17,10 @@ router.get(
   (req, res) => {
     // Create a JWT after successful OAuth
     const payload = {
+      userId: req.user._id,
       githubId: req.user.githubId,
       username: req.user.username,
+      role: req.user.role,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
