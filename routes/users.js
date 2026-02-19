@@ -10,6 +10,44 @@ const {
   deleteUser,
 } = require("../controllers/usersController");
 
+const validateUser = (req, res, next) => {
+  const { githubId, username, displayName, role } = req.body;
+
+  if (req.method === "POST") {
+    if (!githubId || typeof githubId !== "string") {
+      return res.status(400).json({ message: "Invalid githubId" });
+    }
+
+    if (!username || typeof username !== "string" || !username.trim()) {
+      return res.status(400).json({ message: "Invalid username" });
+    }
+  }
+
+  if (req.method === "PUT") {
+    if (githubId !== undefined && typeof githubId !== "string") {
+      return res.status(400).json({ message: "Invalid githubId" });
+    }
+
+    if (
+      username !== undefined &&
+      (typeof username !== "string" || !username.trim())
+    ) {
+      return res.status(400).json({ message: "Invalid username" });
+    }
+
+    if (displayName !== undefined && typeof displayName !== "string") {
+      return res.status(400).json({ message: "Invalid displayName" });
+    }
+
+    if (role !== undefined && !["admin", "staff", "viewer"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+  }
+
+  next();
+};
+
+
 /**
  * @openapi
  * components:
@@ -88,7 +126,7 @@ router.get("/:id", getUserById);
  *       401:
  *         description: Unauthorized
  */
-router.post("/", requireAuth, createUser);
+router.post("/", requireAuth, validateUser, createUser);
 
 /**
  * @openapi
@@ -121,7 +159,7 @@ router.post("/", requireAuth, createUser);
  *       404:
  *         description: User not found
  */
-router.put("/:id", requireAuth, updateUser);
+router.put("/:id", requireAuth, validateUser, updateUser);
 
 /**
  * @openapi

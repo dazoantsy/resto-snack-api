@@ -10,6 +10,29 @@ const {
   deleteCategory,
 } = require("../controllers/categoriesController");
 
+const validateCategory = (req, res, next) => {
+  const { name, description } = req.body;
+
+  if (req.method === "POST") {
+    if (!name || typeof name !== "string" || !name.trim()) {
+      return res.status(400).json({ message: "Invalid category name" });
+    }
+  }
+
+  if (req.method === "PUT") {
+    if (name !== undefined && (typeof name !== "string" || !name.trim())) {
+      return res.status(400).json({ message: "Invalid category name" });
+    }
+
+    if (description !== undefined && typeof description !== "string") {
+      return res.status(400).json({ message: "Invalid category description" });
+    }
+  }
+
+  next();
+};
+
+
 /**
  * @openapi
  * components:
@@ -82,7 +105,7 @@ router.get("/:id", getCategoryById);
  *       401:
  *         description: Unauthorized
  */
-router.post("/", requireAuth, createCategory);
+router.post("/", requireAuth, validateCategory, createCategory);
 
 /**
  * @openapi
@@ -115,7 +138,7 @@ router.post("/", requireAuth, createCategory);
  *       404:
  *         description: Category not found
  */
-router.put("/:id", requireAuth, updateCategory);
+router.put("/:id", requireAuth, validateCategory, updateCategory);
 
 /**
  * @openapi
